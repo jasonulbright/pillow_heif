@@ -1,0 +1,48 @@
+name: Spectra decode-only wheels
+
+on:
+  push:
+    branches: [spectra-build]
+  pull_request:
+    branches: [spectra-build]
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        id: python
+        with:
+          python-version: "3.15.2"
+      - name: Build and verify
+        shell: pwsh
+        run: ./spectra/build-windows.ps1 -Python "${{ steps.python.outputs.python-path }}"
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: wheel-windows-x86_64
+          path: spectra-dist/*.whl
+          if-no-files-found: error
+
+  linux:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Build and verify
+        run: |
+          image=$(grep '^MANYLINUX_IMAGE=' spectra/pins.env | cut -d= -f2-)
+          docker run --rm -v "$PWD:/io" -e PYTAG=cp315-cp315 "$image" bash /io/spectra/build-linux.sh
+      - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: wheel-linux-x86_64
+          path: spectra-dist/*.whl
+          if-no-files-found: error

@@ -28,6 +28,12 @@ def main() -> None:
     values = pins()
     # safe.directory: a CI container runs as another user than the one that checked out.
     git = ["git", "-c", f"safe.directory={ROOT.as_posix()}", "-C", str(ROOT)]
+    # The binding comes from the commit and the build rules from the working tree:
+    # both must be the same text.
+    dirty = subprocess.run([*git, "status", "--porcelain"], check=True, capture_output=True, text=True).stdout.strip()
+    if dirty:
+        sys.exit(f"REFUSED: commit or remove these changes before a build:
+{dirty}")
     archive = subprocess.run([*git, "archive", "HEAD"], check=True, capture_output=True).stdout
     with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         tar.extractall(dest, filter="data")

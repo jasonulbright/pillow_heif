@@ -37,6 +37,9 @@ foreach ($d in @($Src, $Build, $Prefix, $Unrepaired, $Dist, $BuildVenv, $TestVen
     if (Test-Path $d) { Remove-Item $d -Recurse -Force }
 }
 New-Item -ItemType Directory -Force $Downloads, $Src, $Build, $Prefix, $Dist | Out-Null
+# A refused build must leave nothing that someone could take for its output.
+if (Test-Path $OutDir) { Remove-Item (Join-Path $OutDir "pillow_heif-*-win_amd64.whl") -Force }
+Invoke-Checked "gate tests" { & $Python -I -B (Join-Path $PSScriptRoot "test_gates.py") }
 
 $Tar = Join-Path $env:SystemRoot "System32\tar.exe"
 foreach ($lib in @("LIBHEIF", "LIBDE265")) {
@@ -60,9 +63,12 @@ $vcvars = Join-Path $vs "VC\Auxiliary\Build\vcvars64.bat"
 foreach ($line in (cmd /c "`"$vcvars`" >nul 2>&1 && set")) {
     if ($line -match '^([^=]+)=(.*)$') { Set-Item -Path "env:$($Matches[1])" -Value $Matches[2] }
 }
-# /Brepro drops the link timestamp and other per-run fields.
-$env:CL = "/Brepro"
-$env:LINK = "/Brepro"
+# /Brepro drops the link timestamp and other per-run fields. The libraries parse
+# untrusted files: Control Flow Guard and CET compatibility are on, and
+# verify_wheel.py refuses a binary without them. CL and LINK reach every compile
+# and link, the binding's included.
+$env:CL = "/Brepro /guard:cf"
+$env:LINK = "/Brepro /guard:cf /CETCOMPAT"
 $env:SOURCE_DATE_EPOCH = $Pins.SOURCE_DATE_EPOCH
 
 $Common = @("-GNinja", "-DCMAKE_MAKE_PROGRAM=$Ninja", "-DCMAKE_BUILD_TYPE=Release",
@@ -107,7 +113,6 @@ Invoke-Checked "delvewheel repair" {
     & (Join-Path $BuildVenv "Scripts\delvewheel.exe") repair -w $Dist --add-path (Join-Path $Prefix "bin") $built[0].FullName
 }
 $wheel = Get-Item (Join-Path $Dist $built[0].Name)
-Invoke-Checked "import inventory" { & $VPy (Join-Path $PSScriptRoot "check_imports.py") $wheel.FullName }
 
 Invoke-Checked "test venv" { & $Python -m venv $TestVenv }
 $TPy = Join-Path $TestVenv "Scripts\python.exe"
@@ -115,7 +120,10 @@ Invoke-Checked "pillow install" {
     & $TPy -m pip install --disable-pip-version-check --require-hashes --only-binary :all: --no-deps -r (Join-Path $PSScriptRoot "test-requirements-windows.txt")
 }
 Invoke-Checked "wheel install" { & $TPy -m pip install --disable-pip-version-check --no-index --no-deps $wheel.FullName }
-Invoke-Checked "wheel verification" { & $TPy -I (Join-Path $PSScriptRoot "verify_wheel.py") $wheel.FullName }
+# pefile comes from the build environment; it is appended to the path, after the
+# test environment's own packages.
+$env:SPECTRA_TOOLS = Join-Path $BuildVenv "Lib\site-packages"
+Invoke-Checked "wheel verification" { & $TPy -B -P (Join-Path $PSScriptRoot "verify_wheel.py") $wheel.FullName windows }
 
 New-Item -ItemType Directory -Force $OutDir | Out-Null
 Copy-Item $wheel.FullName $OutDir -Force

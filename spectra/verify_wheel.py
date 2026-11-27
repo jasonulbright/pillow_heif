@@ -1,76 +1,62 @@
-"""Refuse a built wheel that carries an encoder or decodes the corpus differently.
+"""Refuse a built wheel that breaks a rule in gates.py or decodes a fixture differently.
 
-Usage: python verify_wheel.py <wheel>     (run with that wheel and Pillow installed)
+Usage: python verify_wheel.py <wheel> <windows|linux>
+
+Run with that wheel and Pillow installed. Windows also needs pefile on
+sys.path (pass its site-packages in SPECTRA_TOOLS).
 """
 
-import hashlib
 import json
+import os
 import pathlib
-import re
 import sys
+import tempfile
 import zipfile
 
-from PIL import Image
-
-import pillow_heif
-
 HERE = pathlib.Path(__file__).resolve().parent
-NATIVE = re.compile(r"\.(pyd|dll|so(\.[0-9.]+)?)$")
-# File names that must not ship, and entry points that only an encoder library has.
-FORBIDDEN_NAMES = re.compile(r"x265|x264|kvazaar|aom|rav1e|svtav1|msvcp140|vcruntime140|libgcc|libstdc|winpthread", re.I)
-FORBIDDEN_SYMBOLS = (b"x265_encoder_encode", b"x265_encoder_open", b"x265_api_get", b"x264_encoder_encode", b"kvz_api_get")
+sys.path.insert(0, str(HERE))
+if os.environ.get("SPECTRA_TOOLS"):
+    sys.path.append(os.environ["SPECTRA_TOOLS"])
+
+import binaries  # noqa: E402
+import gates  # noqa: E402
+
+
+def check_binaries(platform: str, entries: dict) -> list:
+    problems = []
+    inspect = binaries.inspect_pe if platform == "windows" else binaries.inspect_elf
+    with tempfile.TemporaryDirectory() as folder:
+        for name, data in entries.items():
+            if not data.startswith(gates.BINARY_MAGIC):
+                continue
+            path = pathlib.Path(folder) / pathlib.PurePosixPath(name).name
+            path.write_bytes(data)
+            imports, missing = inspect(path)
+            print(f"  {path.name} -> {', '.join(imports)}")
+            problems += gates.check_imports(platform, name, imports)
+            problems += [f"{name} was linked without {item}" for item in missing]
+    return problems
 
 
 def main() -> None:
-    pins = dict(
-        row.split("=", 1)
-        for row in (HERE / "pins.env").read_text(encoding="utf-8").splitlines()
-        if row and not row.startswith("#")
-    )
-    problems = []
-    with zipfile.ZipFile(sys.argv[1]) as wheel:
-        names = wheel.namelist()
-        natives = [n for n in names if NATIVE.search(n)]
-        for name in natives:
-            if FORBIDDEN_NAMES.search(pathlib.PurePosixPath(name).name):
-                problems.append(f"forbidden file in the wheel: {name}")
-            data = wheel.read(name)
-            problems += [f"{name} holds {s.decode()}" for s in FORBIDDEN_SYMBOLS if s in data]
-        for need in ("COPYING.libheif", "COPYING.libde265"):
-            if not any(n.endswith("/" + need) for n in names):
-                problems.append(f"the wheel carries no {need}")
-    print("native files:", *natives, sep="\n  ")
-    libraries = [pathlib.PurePosixPath(n).name for n in natives if "_pillow_heif" not in n]
-    for need in ("heif", "de265"):
-        if not any(need in name for name in libraries):
-            problems.append(f"lib{need} is not bundled as a separate library")
+    wheel_path, platform = sys.argv[1], sys.argv[2]
+    pins = gates.read_pins(HERE / "pins.env")
+    with zipfile.ZipFile(wheel_path) as wheel:
+        entries = {info.filename: wheel.read(info) for info in wheel.infolist() if not info.is_dir()}
+    problems = gates.check_files(platform, entries)
+    problems += check_binaries(platform, entries)
+
+    import pillow_heif  # noqa: PLC0415
+    from fingerprint import fingerprint_all  # noqa: PLC0415
 
     info = pillow_heif.libheif_info()
     print(json.dumps(info))
-    if info["libheif"] != pins["LIBHEIF_VERSION"]:
-        problems.append(f"libheif reports {info['libheif']}")
-    if set(info["decoders"]) != {"libde265"} or pins["LIBDE265_VERSION"] not in info["decoders"]["libde265"]:
-        problems.append(f"decoders: {info['decoders']}")
-    # `mask` is libheif's built-in stub, not a codec library.
-    if not set(info["encoders"]) <= {"mask"} or info["HEIF"] != "":
-        problems.append(f"an encoder is present: {info['encoders']} HEIF={info['HEIF']!r}")
-    if pillow_heif.__version__ != pins["WHEEL_VERSION"]:
-        problems.append(f"version {pillow_heif.__version__}")
-
-    pillow_heif.register_heif_opener()
+    problems += gates.check_library_report(info, pillow_heif.__version__, pins)
     expected = json.loads((HERE / "fingerprints.json").read_text(encoding="utf-8"))
-    present = sorted(p.name for p in (HERE / "fixtures").glob("*.heic"))
-    if present != sorted(expected):
-        problems.append("the fixture set and fingerprints.json differ")
-    for name, digest in sorted(expected.items()):
-        with Image.open(HERE / "fixtures" / name) as im:
-            im.load()
-            got = hashlib.sha256(im.tobytes()).hexdigest()[:16]
-        if got != digest:
-            problems.append(f"{name} decodes to {got}, pinned {digest}")
+    problems += gates.check_decodes(expected, fingerprint_all(pillow_heif))
     if problems:
         sys.exit("REFUSED:\n  " + "\n  ".join(problems))
-    print(f"OK: decode-only, {len(expected)} fixtures match their pinned decodes")
+    print(f"OK: decode-only, hardened, {len(expected)} fixtures match their pinned decodes")
 
 
 if __name__ == "__main__":

@@ -24,16 +24,38 @@ docker run --rm -v "$PWD:/io" -e PYTAG=cp315-cp315 \
   "$(grep '^MANYLINUX_IMAGE=' spectra/pins.env | cut -d= -f2-)" bash /io/spectra/build-linux.sh
 ```
 
-The wheel is written to `spectra-dist/`. Both scripts build from the committed
-tree (`git archive HEAD`), so commit a change before you build it.
+The wheel is written to `spectra-dist/`. A build starts by removing the older
+wheel of its platform from that folder, and it refuses a working tree with
+uncommitted changes.
 
 ## What a build refuses
 
-`verify_wheel.py` (both platforms) and `check_imports.py` (Windows) stop the
-build when the wheel carries an encoder library or an encoder entry point, when
-libheif reports an encoder, when a library version differs from `pins.env`, or
-when one of the 13 images in `fixtures/` decodes to different pixels than
-`fingerprints.json` records.
+`gates.py` holds the rules as allow-lists, and `test_gates.py` shows that each
+rule refuses a bad input. Both build scripts run the tests first, and
+`verify_wheel.py` applies the rules to the wheel:
+
+- any binary other than the extension, libheif and libde265;
+- an import (`DT_NEEDED` on Linux) that is not on the list for that file;
+- a missing protection: ASLR, NX, Control Flow Guard and CET compatibility on
+  Windows; RELRO, immediate binding and a non-executable stack on Linux;
+- an encoder entry point, an encoder that libheif reports, a second decoder, or a
+  version that differs from `pins.env`;
+- a fixture that decodes differently from `fingerprints.json`: every image, its
+  mode, size, pixels, bit depth, primary flag, thumbnail list, EXIF and ICC, and
+  the high-bit-depth output of the 10-bit files. The values were written with
+  pi-heif 1.4.0, the decoder Spectra PDF shipped before this build.
+
+## Replace a library
+
+libheif and libde265 are separate files in the installed package. The extension
+and libheif load them by the exact names in the wheel, which carry a hash. Give a
+replacement the same file name.
+
+## A note for the application
+
+libheif turns off its own resource limits when the environment variable
+`LIBHEIF_SECURITY_LIMITS` is `off`. Remove that variable from the environment of
+a process that decodes untrusted files.
 
 ## Update to a new upstream release
 
@@ -52,5 +74,6 @@ you change the value.
 Set the interpreter in the workflow, `PYTAG`, and the two Pillow rows in
 `test-requirements-*.txt`.
 
-Upstream's own workflows (`test.yml`, `wheels.yml`, `close-stale.yml`) are not
-used on this branch.
+Upstream's workflows (`test.yml`, `wheels.yml`, `close-stale.yml`) are removed
+from this branch. When a merge from upstream brings them back as a conflict, keep
+them removed.

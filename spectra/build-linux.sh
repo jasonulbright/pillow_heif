@@ -19,6 +19,13 @@ WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 PREFIX="$WORK/prefix"
 mkdir -p "$WORK/downloads" "$WORK/src" "$PREFIX" "$ROOT/spectra-dist"
+# A refused build must leave nothing that someone could take for its output.
+rm -f "$ROOT"/spectra-dist/pillow_heif-*manylinux*.whl
+"$PY" -I -B "$SPECTRA/test_gates.py"
+# The libraries parse untrusted files. verify_wheel.py checks the link results.
+export CFLAGS="-fstack-protector-strong -fstack-clash-protection -fcf-protection -D_FORTIFY_SOURCE=2"
+export CXXFLAGS="$CFLAGS"
+export LDFLAGS="-Wl,-z,relro -Wl,-z,now -Wl,-z,noexecstack"
 
 fetch() { # url sha256
     local file="$WORK/downloads/${1##*/}"
@@ -60,7 +67,7 @@ wheel=$(ls "$WORK"/dist/*.whl)
 "$WORK/venv-test/bin/python" -m pip install --disable-pip-version-check --require-hashes --only-binary :all: --no-deps \
     -r "$SPECTRA/test-requirements-linux.txt"
 "$WORK/venv-test/bin/python" -m pip install --disable-pip-version-check --no-index --no-deps "$wheel"
-"$WORK/venv-test/bin/python" -I "$SPECTRA/verify_wheel.py" "$wheel"
+"$WORK/venv-test/bin/python" -B -P "$SPECTRA/verify_wheel.py" "$wheel" linux
 
 cp "$wheel" "$ROOT/spectra-dist/"
 (cd "$ROOT/spectra-dist" && sha256sum "$(basename "$wheel")")

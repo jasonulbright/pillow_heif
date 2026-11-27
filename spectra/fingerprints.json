@@ -1,0 +1,585 @@
+{
+ "exif-orient6.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "113c1037aae39b85",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "9ae26a4b26faf718",
+    "primary": true,
+    "size": [
+     120,
+     160
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "361a6900ca3d5849",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": 1,
+    "pixels": "9ae26a4b26faf718",
+    "size": [
+     120,
+     160
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "gray10.heic": {
+  "high_bit_depth": [
+   {
+    "mode": "I;16",
+    "pixels": "671a4128bda48047",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "images": [
+   {
+    "bit_depth": 10,
+    "exif": "",
+    "icc": "",
+    "mode": "I;16",
+    "pixels": "671a4128bda48047",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "I;16",
+    "orientation": null,
+    "pixels": "671a4128bda48047",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "gray8.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "L",
+    "pixels": "60aa437f83f25d8d",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "L",
+    "orientation": null,
+    "pixels": "60aa437f83f25d8d",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "grid-tiled.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "1f2f241555ac57e0",
+    "primary": true,
+    "size": [
+     512,
+     384
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "1f2f241555ac57e0",
+    "size": [
+     512,
+     384
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "icc.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "2632894fa14e94dc",
+    "mode": "RGB",
+    "pixels": "b4c672fdd60047b5",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "2632894fa14e94dc",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "b4c672fdd60047b5",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "lossless.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "54695dc28869eb48",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "54695dc28869eb48",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "mirror.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "e78b7182cb79ccff",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "062a593b77d1b167",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "361a6900ca3d5849",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": 1,
+    "pixels": "062a593b77d1b167",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "multi-3.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "b4c672fdd60047b5",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   },
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "60ca2a3cda1b3345",
+    "primary": false,
+    "size": [
+     100,
+     100
+    ],
+    "thumbnails": []
+   },
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGBA",
+    "pixels": "522b5b0980bf2a5f",
+    "primary": false,
+    "size": [
+     80,
+     60
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "b4c672fdd60047b5",
+    "size": [
+     160,
+     120
+    ]
+   },
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "60ca2a3cda1b3345",
+    "size": [
+     100,
+     100
+    ]
+   },
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGBA",
+    "orientation": null,
+    "pixels": "522b5b0980bf2a5f",
+    "size": [
+     80,
+     60
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "multi-primary1.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "b4c672fdd60047b5",
+    "primary": false,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   },
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "60ca2a3cda1b3345",
+    "primary": true,
+    "size": [
+     100,
+     100
+    ],
+    "thumbnails": []
+   },
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGBA",
+    "pixels": "522b5b0980bf2a5f",
+    "primary": false,
+    "size": [
+     80,
+     60
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "b4c672fdd60047b5",
+    "size": [
+     160,
+     120
+    ]
+   },
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "60ca2a3cda1b3345",
+    "size": [
+     100,
+     100
+    ]
+   },
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGBA",
+    "orientation": null,
+    "pixels": "522b5b0980bf2a5f",
+    "size": [
+     80,
+     60
+    ]
+   }
+  ],
+  "primary_index": 1
+ },
+ "odd-dims.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "9cc61e10f6466e62",
+    "primary": true,
+    "size": [
+     29,
+     100
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "9cc61e10f6466e62",
+    "size": [
+     29,
+     100
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "rgb10.heic": {
+  "high_bit_depth": [
+   {
+    "mode": "RGB;16",
+    "pixels": "b32bcd2e8273a0b6",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "images": [
+   {
+    "bit_depth": 10,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "a112bdfad93707e0",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "a112bdfad93707e0",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "rgb8-chroma444.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "ab544251974b7187",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "ab544251974b7187",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "rgb8.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "b4c672fdd60047b5",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "b4c672fdd60047b5",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "rgba8.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGBA",
+    "pixels": "676d1e23565b0958",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGBA",
+    "orientation": null,
+    "pixels": "676d1e23565b0958",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "thumbnail.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "71d13a4bcdd2c9c2",
+    "primary": true,
+    "size": [
+     320,
+     240
+    ],
+    "thumbnails": [
+     128
+    ]
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "71d13a4bcdd2c9c2",
+    "size": [
+     320,
+     240
+    ]
+   }
+  ],
+  "primary_index": 0
+ }
+}

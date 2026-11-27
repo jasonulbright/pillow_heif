@@ -123,7 +123,7 @@ Invoke-Checked "wheel install" { & $TPy -m pip install --disable-pip-version-che
 # pefile comes from the build environment; it is appended to the path, after the
 # test environment's own packages.
 $env:SPECTRA_TOOLS = Join-Path $BuildVenv "Lib\site-packages"
-Invoke-Checked "wheel verification" { & $TPy -B -P (Join-Path $PSScriptRoot "verify_wheel.py") $wheel.FullName windows }
+Invoke-Checked "wheel verification" { & $TPy -I -B (Join-Path $PSScriptRoot "verify_wheel.py") $wheel.FullName windows }
 
 New-Item -ItemType Directory -Force $OutDir | Out-Null
 Copy-Item $wheel.FullName $OutDir -Force

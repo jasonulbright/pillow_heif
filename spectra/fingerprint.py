@@ -19,6 +19,26 @@ def _digest(data) -> str:
     return hashlib.sha256(bytes(data)).hexdigest()[:16] if data else ""
 
 
+def opened(module, path: pathlib.Path) -> list:
+    """Every frame through Pillow's `Image.open`, the way Spectra PDF reads a file."""
+    from PIL import Image, ImageSequence  # noqa: PLC0415
+
+    module.register_heif_opener()
+    with Image.open(path) as picture:
+        frames = []
+        for frame in ImageSequence.Iterator(picture):
+            frame.load()
+            frames.append({
+                "mode": frame.mode,
+                "size": list(frame.size),
+                "pixels": _digest(frame.tobytes()),
+                "exif": _digest(frame.info.get("exif")),
+                "icc": _digest(frame.info.get("icc_profile")),
+                "orientation": frame.getexif().get(0x0112),
+            })
+    return frames
+
+
 def fingerprint(module, path: pathlib.Path) -> dict:
     heif = module.open_heif(path)
     images = []
@@ -34,7 +54,7 @@ def fingerprint(module, path: pathlib.Path) -> dict:
             "exif": _digest(image.info.get("exif")),
             "icc": _digest(image.info.get("icc_profile")),
         })
-    result = {"primary_index": heif.primary_index, "images": images}
+    result = {"primary_index": heif.primary_index, "images": images, "opened": opened(module, path)}
     if any((image["bit_depth"] or 8) > 8 for image in images):
         wide = module.open_heif(path, convert_hdr_to_8bit=False)
         result["high_bit_depth"] = [

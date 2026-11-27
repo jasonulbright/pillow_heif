@@ -42,14 +42,18 @@ rule refuses a bad input. Both build scripts run the tests first, and
   version that differs from `pins.env`;
 - a fixture that decodes differently from `fingerprints.json`: every image, its
   mode, size, pixels, bit depth, primary flag, thumbnail list, EXIF and ICC, and
-  the high-bit-depth output of the 10-bit files. The values were written with
+  the high-bit-depth output of the 10-bit files, and every frame through Pillow's
+  `Image.open`. Embedded thumbnails are listed, not decoded: Spectra PDF does not
+  read them. No fixture has an ICC profile. The values were written with
   pi-heif 1.4.0, the decoder Spectra PDF shipped before this build.
 
 ## Replace a library
 
 libheif and libde265 are separate files in the installed package. The extension
 and libheif load them by the exact names in the wheel, which carry a hash. Give a
-replacement the same file name.
+replacement the same file name. A replacement libheif must also load libde265 by
+its hashed name: link it against that name, or change the name in its import
+table.
 
 ## A note for the application
 

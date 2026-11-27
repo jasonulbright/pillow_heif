@@ -67,7 +67,7 @@ wheel=$(ls "$WORK"/dist/*.whl)
 "$WORK/venv-test/bin/python" -m pip install --disable-pip-version-check --require-hashes --only-binary :all: --no-deps \
     -r "$SPECTRA/test-requirements-linux.txt"
 "$WORK/venv-test/bin/python" -m pip install --disable-pip-version-check --no-index --no-deps "$wheel"
-"$WORK/venv-test/bin/python" -B -P "$SPECTRA/verify_wheel.py" "$wheel" linux
+"$WORK/venv-test/bin/python" -I -B "$SPECTRA/verify_wheel.py" "$wheel" linux
 
 cp "$wheel" "$ROOT/spectra-dist/"
 (cd "$ROOT/spectra-dist" && sha256sum "$(basename "$wheel")")

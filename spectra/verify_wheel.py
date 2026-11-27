@@ -22,9 +22,9 @@ import binaries  # noqa: E402
 import gates  # noqa: E402
 
 
-def check_binaries(platform: str, entries: dict) -> list:
+def check_binaries(platform: str, entries: dict, inspect=None) -> list:
     problems = []
-    inspect = binaries.inspect_pe if platform == "windows" else binaries.inspect_elf
+    inspect = inspect or (binaries.inspect_pe if platform == "windows" else binaries.inspect_elf)
     with tempfile.TemporaryDirectory() as folder:
         for name, data in entries.items():
             if not data.startswith(gates.BINARY_MAGIC):

@@ -9,7 +9,9 @@ import sys
 import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import binaries  # noqa: E402
 import gates  # noqa: E402
+import verify_wheel  # noqa: E402
 
 HASH = "0" * 32
 PE = b"MZ" + b"\0" * 16
@@ -109,6 +111,48 @@ class Decodes(unittest.TestCase):
         self.assertTrue(gates.check_decodes({}, {}))
         self.assertTrue(gates.check_decodes(DECODES, {}))
         self.assertTrue(gates.check_decodes(DECODES, {**DECODES, "b.heic": {}}))
+
+
+class Struct:
+    def __init__(self, **fields):
+        self.__dict__.update(fields)
+
+
+def fake_pe(flags=0x4160, cet=1):
+    debug = [] if cet is None else [Struct(struct=Struct(Type=20, PointerToRawData=0))]
+    return Struct(OPTIONAL_HEADER=Struct(DllCharacteristics=flags), DIRECTORY_ENTRY_DEBUG=debug,
+                  __data__=(cet or 0).to_bytes(4, "little"))
+
+
+DYNAMIC = " 0x000000000000001e (FLAGS)  BIND_NOW\n"
+SEGMENTS = "  GNU_STACK      0x000000 0x0 0x0 0x000000 0x000000 RW  0x10\n  GNU_RELRO      0x000000\n"
+
+
+class Protections(unittest.TestCase):
+    def test_complete_binaries_pass(self):
+        self.assertEqual(binaries.pe_missing(fake_pe()), [])
+        self.assertEqual(binaries.elf_missing(DYNAMIC, SEGMENTS), [])
+        self.assertEqual(binaries.elf_missing(" (FLAGS_1)  Flags: NOW\n", SEGMENTS), [])
+
+    def test_each_missing_pe_protection_is_named(self):
+        for name, bit in binaries.PE_FLAGS.items():
+            with self.subTest(name):
+                self.assertEqual(binaries.pe_missing(fake_pe(flags=0x4160 & ~bit)), [name])
+        for cet in (0, None):
+            self.assertEqual(binaries.pe_missing(fake_pe(cet=cet)), ["CET compatibility"])
+
+    def test_each_missing_elf_protection_is_named(self):
+        self.assertEqual(binaries.elf_missing("", SEGMENTS), ["immediate binding"])
+        self.assertEqual(binaries.elf_missing(DYNAMIC, SEGMENTS.replace("GNU_RELRO", "LOAD")), ["RELRO"])
+        self.assertEqual(binaries.elf_missing(DYNAMIC, SEGMENTS.replace("RW  ", "RWE ")), ["non-executable stack"])
+        self.assertEqual(binaries.elf_missing(DYNAMIC, "GNU_RELRO"), ["non-executable stack"])
+
+    def test_the_wheel_check_reports_what_the_inspection_finds(self):
+        entries = {f"p/heif-{HASH}.dll": PE, "p/readme.txt": b"text"}
+        found = verify_wheel.check_binaries("windows", entries, inspect=lambda path: (["libx265.dll"], ["RELRO"]))
+        self.assertEqual(len(found), 2)
+        self.assertIn("libx265.dll", found[0])
+        self.assertIn("without RELRO", found[1])
 
 
 if __name__ == "__main__":

@@ -35,7 +35,8 @@ rule refuses a bad input. Both build scripts run the tests first, and
 `verify_wheel.py` applies the rules to the wheel:
 
 - any binary other than the extension, libheif and libde265;
-- an import (`DT_NEEDED` on Linux) that is not on the list for that file;
+- an import (`DT_NEEDED` on Linux) that is not on the list for that file, and an
+  extension or libheif that does not load the bundled library under it;
 - a missing protection: ASLR, NX, Control Flow Guard and CET compatibility on
   Windows; RELRO, immediate binding and a non-executable stack on Linux;
 - an encoder entry point, an encoder that libheif reports, a second decoder, or a
@@ -44,7 +45,7 @@ rule refuses a bad input. Both build scripts run the tests first, and
   mode, size, pixels, bit depth, primary flag, thumbnail list, EXIF and ICC, and
   the high-bit-depth output of the 10-bit files, and every frame through Pillow's
   `Image.open`. Embedded thumbnails are listed, not decoded: Spectra PDF does not
-  read them. No fixture has an ICC profile. The values were written with
+  read them.  The values were written with
   pi-heif 1.4.0, the decoder Spectra PDF shipped before this build.
 
 ## Replace a library

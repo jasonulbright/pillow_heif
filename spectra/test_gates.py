@@ -62,6 +62,12 @@ class Imports(unittest.TestCase):
         self.assertEqual(gates.check_imports("windows", f"heif-{HASH}.dll", ["KERNEL32.dll", f"libde265-{HASH}.dll"]), [])
         self.assertEqual(gates.check_imports("linux", "libde265-0000abcd.so.0.2.3", ["libc.so.6", "libstdc++.so.6"]), [])
 
+    def test_a_missing_required_library_is_refused(self):
+        for name in (f"heif-{HASH}.dll", "_pillow_heif.cp315-win_amd64.pyd"):
+            with self.subTest(name):
+                self.assertTrue(gates.check_imports("windows", name, []))
+        self.assertEqual(gates.check_imports("windows", f"libde265-{HASH}.dll", []), [])
+
     def test_refused(self):
         for platform, name, item in (
             ("windows", f"heif-{HASH}.dll", "libx265-1.dll"),
@@ -150,9 +156,8 @@ class Protections(unittest.TestCase):
     def test_the_wheel_check_reports_what_the_inspection_finds(self):
         entries = {f"p/heif-{HASH}.dll": PE, "p/readme.txt": b"text"}
         found = verify_wheel.check_binaries("windows", entries, inspect=lambda path: (["libx265.dll"], ["RELRO"]))
-        self.assertEqual(len(found), 2)
-        self.assertIn("libx265.dll", found[0])
-        self.assertIn("without RELRO", found[1])
+        self.assertTrue(any("loads libx265.dll" in item for item in found))
+        self.assertTrue(any("without RELRO" in item for item in found))
 
 
 if __name__ == "__main__":

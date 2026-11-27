@@ -43,6 +43,10 @@ LINUX_IMPORTS = {
 }
 
 
+# What each file must load. An empty or unread import list must not pass.
+REQUIRED_IMPORTS = {"extension": r".*heif-[0-9a-f]+\.(dll|so(\.\d+)*)", "libheif": r"libde265-[0-9a-f]+\.(dll|so(\.\d+)*)"}
+
+
 def kind_of(name: str) -> str:
     base = pathlib.PurePosixPath(name).name
     if base.startswith("_pillow_heif"):
@@ -74,7 +78,11 @@ def check_imports(platform: str, name: str, imports: list) -> list:
     table = WINDOWS_IMPORTS if platform == "windows" else LINUX_IMPORTS
     flags = re.IGNORECASE if platform == "windows" else 0
     allowed = table.get(kind_of(name), ())
-    return [
+    required = REQUIRED_IMPORTS.get(kind_of(name))
+    unread = []
+    if required and not any(re.fullmatch(required, item, flags) for item in imports):
+        unread.append(f"{name} does not load the bundled library it is built on; its imports read as {imports}")
+    return unread + [
         f"{name} loads {item}, which is not on the allow-list"
         for item in imports
         if not any(re.fullmatch(pattern, item, flags) for pattern in allowed)

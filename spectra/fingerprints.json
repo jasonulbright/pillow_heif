@@ -133,6 +133,37 @@
   ],
   "primary_index": 0
  },
+ "icc.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "",
+    "icc": "2632894fa14e94dc",
+    "mode": "RGB",
+    "pixels": "b4c672fdd60047b5",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "",
+    "icc": "2632894fa14e94dc",
+    "mode": "RGB",
+    "orientation": null,
+    "pixels": "b4c672fdd60047b5",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
  "lossless.heic": {
   "images": [
    {
@@ -156,6 +187,37 @@
     "mode": "RGB",
     "orientation": null,
     "pixels": "54695dc28869eb48",
+    "size": [
+     160,
+     120
+    ]
+   }
+  ],
+  "primary_index": 0
+ },
+ "mirror.heic": {
+  "images": [
+   {
+    "bit_depth": 8,
+    "exif": "e78b7182cb79ccff",
+    "icc": "",
+    "mode": "RGB",
+    "pixels": "062a593b77d1b167",
+    "primary": true,
+    "size": [
+     160,
+     120
+    ],
+    "thumbnails": []
+   }
+  ],
+  "opened": [
+   {
+    "exif": "361a6900ca3d5849",
+    "icc": "",
+    "mode": "RGB",
+    "orientation": 1,
+    "pixels": "062a593b77d1b167",
     "size": [
      160,
      120
